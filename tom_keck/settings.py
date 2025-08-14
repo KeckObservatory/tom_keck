@@ -63,6 +63,8 @@ INSTALLED_APPS = [
     'tom_observations',
     'tom_dataproducts',
     'custom_code',
+    'tom_eso',
+    'tom_swift'
 ]
 
 SITE_ID = 1
@@ -203,7 +205,7 @@ TASKS = {
 }
 
 # TOM Specific configuration
-TARGET_TYPE = 'NON_SIDEREAL'
+TARGET_TYPE = 'SIDEREAL'
 
 # Set to the full path of a custom target model to extend the BaseTarget Model with custom fields.
 # TARGET_MODEL_CLASS = 'custom_code.models.UserDefinedTarget'
@@ -220,6 +222,15 @@ FACILITIES = {
     'LCO': {
         'portal_url': 'https://observe.lco.global',
         'api_key': '',
+    },
+    'ESO': {
+        'environment': os.getenv('ESO_ENVIRONMENT', 'demo'),
+        'username': os.getenv('ESO_USERNAME', '52052'),
+        'password': os.getenv('ESO_PASSWORD', 'tutorial'),
+    },
+    'SWIFT': {
+        'SWIFT_USERNAME': os.getenv('SWIFT_USERNAME', 'anonymous'),
+        'SWIFT_SHARED_SECRET': os.getenv('SWIFT_SHARED_SECRET', 'anonymous'),
     },
     'KECK': {
         'KECK_USERNAME': os.getenv('KECK_USERNAME', 'anonymous'),
@@ -269,7 +280,9 @@ TOM_FACILITY_CLASSES = [
     'tom_observations.facilities.lco.LCOFacility',
     'tom_observations.facilities.gemini.GEMFacility',
     'tom_observations.facilities.soar.SOARFacility',
-    'tom_keck.keck.KeckFacility'
+    'tom_keck.keck.KeckFacility',
+    'tom_eso.eso.ESOFacility',
+    'tom_swift.swift.SwiftFacility',
 ]
 
 TOM_ALERT_CLASSES = [

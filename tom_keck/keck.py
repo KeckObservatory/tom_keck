@@ -73,21 +73,21 @@ class KeckLoginForm(BaseObservationForm):
             'password',
         )
 
-    def observation_payload(self):
-        """Return payload for login form"""
-        return {
-            'email': self.cleaned_data.get('email', ''),
-            'password': self.cleaned_data.get('password', '')
-        }
+    # def observation_payload(self):
+    #     """Return payload for login form"""
+    #     return {
+    #         'email': self.cleaned_data.get('email', ''),
+    #         'password': self.cleaned_data.get('password', '')
+    #     }
 
-    def is_valid(self):
-        """Override is_valid to ensure proper validation"""
-        valid = super().is_valid()
-        if valid:
-            logger.debug(f'KeckLoginForm is valid with data: {self.cleaned_data}')
-        else:
-            logger.debug(f'KeckLoginForm validation failed with errors: {self.errors}')
-        return valid
+    # def is_valid(self):
+    #     """Override is_valid to ensure proper validation"""
+    #     valid = super().is_valid()
+    #     if valid:
+    #         logger.debug(f'KeckLoginForm is valid with data: {self.cleaned_data}')
+    #     else:
+    #         logger.debug(f'KeckLoginForm validation failed with errors: {self.errors}')
+    #     return valid
 
 
 class KeckToOObservationForm(BaseObservationForm):
@@ -100,24 +100,6 @@ class KeckToOObservationForm(BaseObservationForm):
             f'This is a custom observation form for Keck.'
         )
 
-        self.keck_api = KeckAPI()
-
-
-
-
-    email = forms.CharField(
-        required=True,
-        label='Keck Email',
-        help_text='Enter your Keck affiliated email address.'
-    )
-    password = forms.CharField(
-        required=True,
-        label='Keck Password',
-        widget=forms.PasswordInput,
-        help_text='Enter your Keck account password.'
-    )
-
-
     filler = [('input progid', 'input progid')]
     projcode = forms.ChoiceField(
         required=True,
@@ -129,7 +111,7 @@ class KeckToOObservationForm(BaseObservationForm):
 
     interrupt_date = forms.DateField(
         required=True,
-        label='Night Date (HST)',
+        label='Night Date (YYYY-MM-DD HST)',
     )
 
     instrument = forms.ChoiceField(
@@ -256,44 +238,42 @@ class KeckToOObservationForm(BaseObservationForm):
             logger.debug(f'KeckToOObservationForm validation failed with errors: {self.errors}')
         return valid
 
-    # def observation_payload(self):
-    #     # self.userid=KeckAPI.validate_user()
-    #     self.action='draft'
-    #     self.tooid=None
-    #     self.semester='2023B'
-    #     self.duration="01:00:00"
-    #     self.skipsubmitwarnings=1
+    def observation_payload(self):
+        # self.userid=KeckAPI.validate_user()
+        self.action='draft'
+        self.tooid=None
+        self.semester='2023B'
+        self.duration="01:00:00"
+        self.skipsubmitwarnings=1
 
-    #     payload = {
-    #         # 'submitterid': self.userid,
-    #         'username': 'testname',
-    #         'action': self.action, # either draft, edit, or submit
-    #         'tooid': self.tooid,
-    #         # 'piid': self.userid,
-    #         'semester': self.semester,
-    #         'projcode': self.cleaned_data['projcode'],
-    #         'instrument': self.cleaned_data['instrument'],
-    #         'obsdate': self.cleaned_data['interrupt_date'],
-    #         'starttime': self.cleaned_data['innterrupt_time'],
-    #         'duration': self.duration,
-    #         'starlist': self.cleaned_data['starlist'],
-    #         'target': self.cleaned_data['target'],
-    #         'flextime': self.cleaned_data['flextime'],
-    #         'obsdesignation': '',
-    #         'obslocation': self.cleaned_data['observer_location'],
-    #         'pinotes': self.cleaned_data['notes'],
-    #         'interruptproj': self.cleaned_data['projcode'],
-    #         'interrupttype': self.cleaned_data['interrupt_type'],
-    #         'skipsubmitwarnings': self.skipsubmitwarnings,
-    #         'instrconfigs': self.cleaned_data['config']
-    #     }
+        payload = {
+            # 'submitterid': self.userid,
+            'username': 'testname',
+            'action': self.action, # either draft, edit, or submit
+            'tooid': self.tooid,
+            # 'piid': self.userid,
+            'semester': self.semester,
+            'projcode': self.cleaned_data['projcode'],
+            'instrument': self.cleaned_data['instrument'],
+            'obsdate': self.cleaned_data['interrupt_date'],
+            'starttime': self.cleaned_data['innterrupt_time'],
+            'duration': self.duration,
+            'starlist': self.cleaned_data['starlist'],
+            'target': self.cleaned_data['target'],
+            'flextime': self.cleaned_data['flextime'],
+            'obsdesignation': '',
+            'obslocation': self.cleaned_data['observer_location'],
+            'pinotes': self.cleaned_data['notes'],
+            'interruptproj': self.cleaned_data['projcode'],
+            'interrupttype': self.cleaned_data['interrupt_type'],
+            'skipsubmitwarnings': self.skipsubmitwarnings,
+            'instrconfigs': self.cleaned_data['config']
+        }
 
-    #     return payload
+        return payload
 
     def layout(self):
         return Layout(
-            'email',
-            'password',
             'projcode',
             'interrupt_date',
             'instrument',
@@ -319,9 +299,11 @@ class KeckFacility(BaseObservationFacility):
     ]
 
     observation_forms = {
-        # 'Keck Login': KeckLoginForm,
+        'Keck Login': KeckLoginForm,
         'Keck ToO Observation': KeckToOObservationForm,
     }
+
+    template_name = 'tom_keck/observation_form.html'
 
     SITES = {
         'W. M. Keck Observatory': {
@@ -420,3 +402,25 @@ class KeckFacility(BaseObservationFacility):
         logger.debug('calling too.delete()')
         self.keck_api.too.delete()
         logger.info(f'delete_observation - too.status.errors: {self.keck_api.too.status.errors}')
+
+    def get_facility_context_data(self, **kwargs):
+        """Allow the facility to add additional context data to the template.
+
+        This method is called by `tom_observations.views.ObservationCreateView.get_context_data()`.
+        """
+        logger.debug(f'KeckFacility.get_facility_context_data kwargs: {kwargs}')
+        facility_context_data = super().get_facility_context_data(**kwargs)
+
+        tort_url = 'https://www2.keck.hawaii.edu/inst/PILogin/too/TooRequestPage.php'
+
+        logger.debug(f'KeckFacility.get_facility_context_data facility_context_data: {facility_context_data}')
+        new_context_data = {
+            'iframe_url': tort_url,
+            'observation_form': KeckToOObservationForm,
+            'login_form': KeckLoginForm,
+        }
+        # logger.debug(f'eso new_context_data: {new_context_data}')
+
+        facility_context_data.update(new_context_data)
+        # logger.debug(f'eso facility_context_data: {facility_context_data}')
+        return facility_context_data

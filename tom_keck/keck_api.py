@@ -32,7 +32,7 @@ class KeckAPI:
 
     def __init__(self, debug=True, email=None, password=None):
         self.url = 'https://www3.keck.hawaii.edu'
-        self.userid = None 
+        self.userid = '4866' 
         self.set_userinfo_and_cookies()
         self.set_userinfo()
         self.semester = get_semester(datetime.now().strftime('%Y-%m-%d'))
