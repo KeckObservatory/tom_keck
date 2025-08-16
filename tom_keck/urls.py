@@ -14,7 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, include
+from custom_code.views import KekeView, keke
 
 urlpatterns = [
     path('', include('tom_common.urls')),
+    path('kekebak/', KekeView.as_view(), name='keke'),
+    path('keke/', keke, name='keke'),
 ]

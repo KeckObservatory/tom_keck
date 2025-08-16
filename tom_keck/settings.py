@@ -96,6 +96,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'tom_keck.context_processors.reactjs_assets_paths'
             ],
         },
     },
@@ -165,9 +166,13 @@ DATE_FORMAT = 'Y-m-d'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
+STATICFILES_BASE = os.path.join(BASE_DIR, 'static' )
+REACT_JS_BUILD_DIR = os.path.join(STATICFILES_BASE, 'keke_dist', 'assets')
+if DEBUG:
+    REACT_JS_BUILD_DIR = os.path.join(STATICFILES_BASE, 'keke_dev', 'assets')
 STATIC_ROOT = os.path.join(BASE_DIR, '_static')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), STATICFILES_BASE ]
 MEDIA_ROOT = os.path.join(BASE_DIR, 'data')
 MEDIA_URL = '/data/'
 
