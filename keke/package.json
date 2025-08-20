@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite build --watch --emptyOutDir --base /static/keke_dev --outDir ./../static/keke_dev",
+    "tdev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

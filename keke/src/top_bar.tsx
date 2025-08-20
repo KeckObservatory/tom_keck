@@ -5,7 +5,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography'
 import DoorFrontIcon from '@mui/icons-material/DoorFront';
 import IconButton from '@mui/material/IconButton';
-import React from 'react';
 import { keckURL } from './config';
 
 // interface Props {
@@ -14,9 +13,6 @@ import { keckURL } from './config';
 // }
 
 export function TopBar() {
-
-  React.useEffect(() => {
-  }, [])
 
   const handleHomepageClick = () => {
     window.open(keckURL, "_self")
