@@ -103,7 +103,10 @@ export const ScheduleTable = ({ schedule, instrumentStatusResp }: ScheduleTableP
 export const DayjsDatePicker = ({ date, setDate }: { date: Dayjs, setDate: (date: Dayjs) => void }) => {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker label="Observing Date (HT)" value={date} onChange={(newValue) => newValue && setDate(newValue)} />
+            <DatePicker
+                label="Observing Date (HT)"
+                value={date} 
+                onChange={(newValue) => newValue && setDate(newValue)} />
         </LocalizationProvider>
     );
 }
@@ -111,9 +114,11 @@ export const DayjsDatePicker = ({ date, setDate }: { date: Dayjs, setDate: (date
 export interface Props {
     date: Dayjs;
     setDate: (date: Dayjs) => void;
+    schedule: ScheduleItem[];
+    setSchedule: (schedule: ScheduleItem[]) => void;
 }
 
-interface ScheduleItem {
+export interface ScheduleItem {
     SchedId: number;
     Date: string;
     StartTime: string;
@@ -155,8 +160,7 @@ export interface InstrumentStatusResponse {
 }
 
 export const SchedulePanel = (props: Props) => {
-    const { date, setDate } = props;
-    const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
+    const { date, setDate, schedule, setSchedule } = props;
     const [instrumentsStatusResp, setInstrumentsStatusResp] = useState<InstrumentStatusResponse>({});
 
     useEffect(() => {

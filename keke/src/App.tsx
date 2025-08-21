@@ -4,7 +4,7 @@ import { handleTheme } from './theme'
 import { TopBar } from './top_bar'
 import { TooForm } from './too_form'
 import dayjs from 'dayjs'
-import { SchedulePanel } from './schedule_panel'
+import { SchedulePanel, type ScheduleItem } from './schedule_panel'
 import { LoginPanel } from './login_panel'
 import { TargetForm } from './target_form'
 import { tomAPI } from './config'
@@ -67,7 +67,8 @@ export const StyledPaper = styled(Paper, {
 function App() {
   const [_, setObservations] = useState([])
   const [selectedObservation, setSelectedObservation] = useState<any>({})
-  const [target, setTarget] = useState([])
+  const [target, setTarget] = useState<Target | undefined >(undefined)
+  const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const [userinfo, setUserInfo] = useState<UserInfo | null>(null)
   const now = dayjs()
   console.log('Current time:', now.format('YYYY-MM-DD HH:mm:ss'))
@@ -98,7 +99,7 @@ function App() {
         if (!response.ok) {
           throw new Error('Network response was not ok')
         }
-        const tgt = await response.json()
+        const tgt = await response.json() as Target
         console.log('Target fetched:', tgt)
         setTarget(tgt)
       } catch (error) {
@@ -144,9 +145,9 @@ function App() {
         <TopBar />
         {userinfo ? (
           <>
-            <SchedulePanel date={date} setDate={setDate} />
-            <TooForm obsid={String(userinfo.Id)} semester={semester}/>
+            <SchedulePanel date={date} setDate={setDate} schedule={schedule} setSchedule={setSchedule} />
             <TargetForm target={target}/>
+            <TooForm obsid={String(userinfo.Id)} schedule={schedule} semester={semester} date={date} userinfo={userinfo} />
           </>
         ) : (
           <LoginPanel setUserInfo={setUserInfo} />

@@ -3,7 +3,7 @@ import { StyledPaper, type Target } from "./App";
 import { Box, Button, TextField, Tooltip, Typography } from "@mui/material";
 
 interface Props {
-    target: Target;
+    target?: Target;
 }
 
 export const TargetForm = (props: Props) => {
@@ -23,16 +23,16 @@ export const TargetForm = (props: Props) => {
                 <Box>
                     <Stack sx={{ marginBottom: '24px' }} width="100%" direction="row" justifyContent='center' spacing={2}>
                             <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-                                {`Target name: ${target.name || 'No target selected'}`} 
+                                {`Target name: ${target?.name || 'No target selected'}`} 
                             </Typography>
                             <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-                                {`RA: ${target.ra}`} 
+                                {`RA: ${target?.ra}`} 
                             </Typography>
                             <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-                                {`Dec: ${target.dec}`} 
+                                {`Dec: ${target?.dec}`} 
                             </Typography>
                             <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-                                {`Epoch: ${target.epoch}`} 
+                                {`Epoch: ${target?.epoch}`} 
                             </Typography>
                     </Stack>
                     <Tooltip title={'Visualize target using Keck\'s Planning Tool'}>
