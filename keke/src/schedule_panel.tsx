@@ -137,13 +137,6 @@ export interface ScheduleItem {
     TelNr?: string;
 }
 
-interface Instrument {
-    Instrument: string;
-    ScienceLocation: string;
-    StorageLocation: string;
-    TelNr: string;
-}
-
 interface InstrumentStatus {
     Instrument: string;
     Available?: number;

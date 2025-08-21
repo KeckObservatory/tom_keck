@@ -1,9 +1,8 @@
-import { Tooltip, TextField, Stack, Box, Typography, FormControl, InputLabel, Select, MenuItem, Button, duration } from '@mui/material';
+import { Tooltip, TextField, Stack, Box, Typography, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
 import { StyledPaper } from './App';
 import { useEffect, useState } from 'react';
 import { keckAPIURL } from './config';
 import type { ScheduleItem } from './schedule_panel';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimeField } from '@mui/x-date-pickers/TimeField';

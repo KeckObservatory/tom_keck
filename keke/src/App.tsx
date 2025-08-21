@@ -58,8 +58,6 @@ export const StyledPaper = styled(Paper, {
   });
 
 function App() {
-  const [_, setObservations] = useState([])
-  const [selectedObservation, setSelectedObservation] = useState<any>({})
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const [userinfo, setUserInfo] = useState<UserInfo | null>(null)
   const now = dayjs()
@@ -75,31 +73,6 @@ function App() {
     console.log('Theme:', newTheme)
     return newTheme
   }, [darkMode])
-
-
-  useEffect(() => {
-    console.log('Fetching observations...')
-
-    const fetchObsResp = async () => {
-      try {
-        const response = await fetch(`${tomAPI}/observations/`)
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-        const data = await response.json()
-        setObservations(data.results)
-        if (data.results.length > 0) {
-          setSelectedObservation(data.results[0])
-        }
-      } catch (error) {
-        console.error('Failed to fetch observations:', error)
-      }
-
-    }
-
-    fetchObsResp()
-
-  }, [userinfo])
 
   return (
     <div className="App" style={{

@@ -1,6 +1,6 @@
 import Stack from "@mui/material/Stack";
-import { StyledPaper, type Target, type UserInfo } from "./App";
-import { Box, Button, TextField, Tooltip, Typography } from "@mui/material";
+import { StyledPaper, type UserInfo } from "./App";
+import { Box, Button, Tooltip, Typography } from "@mui/material";
 import { keckAPIURL } from "./config";
 
 interface Props {
