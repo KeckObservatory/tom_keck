@@ -190,13 +190,6 @@ export const SchedulePanel = (props: Props) => {
             }
 
             try {
-                // const response = await fetch(`${keckAPIURL}/schedule/getActiveInstruments`);
-                // if (!response.ok) {
-                //     throw new Error('Network response was not ok');
-                // }
-                // const instr = await response.json() as Instrument[];
-                // const instrString = instr.map(instr => instr.Instrument).join(',');
-                //const response2 = await fetch(`${keckAPIURL}/too/getInstrumentsTooStatus?date=${date.format('YYYY-MM-DD')}&instruments=${instrString}`);
                 const response2 = await fetch(`${keckAPIURL}/too/getInstrumentsTooStatus?date=${date.format('YYYY-MM-DD')}`);
                 if (!response2.ok) {
                     throw new Error('Network response was not ok');

@@ -403,6 +403,24 @@ export const TooForm = (props: Props) => {
                             </FormControl>
                         </Tooltip>
                         <TextField sx={{ width: 250, alignSelf: "center" }} label="Duration" value={too.duration} />
+                        <Tooltip title={'Include any notes'}>
+                            <FormControl fullWidth sx={{ width: 250, alignSelf: "center" }}>
+                                <TextField
+                                    id="notes"
+                                    label="Notes"
+                                    placeholder="Enter any notes here"
+                                    multiline
+                                    variant="outlined"
+                                    onChange={(evt) => {
+                                        setToo(prevToo => ({
+                                            ...prevToo,
+                                            pinotes: evt.target.value,
+                                        }));
+                                    }}
+                                />
+                            </FormControl>
+                        </Tooltip>
+                        <TextField sx={{ width: 250, alignSelf: "center" }} label="Duration" value={too.duration} />
                     </Stack>
                     <StartTimePicker date={date} time={too.starttime} setTime={(time) => setToo(prevToo => ({ ...prevToo, starttime: time }))} />
                     <Stack direction="row" justifyContent="center" spacing={2} sx={{ paddingBottom: '16px' }}>

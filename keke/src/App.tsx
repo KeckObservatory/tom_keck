@@ -9,13 +9,6 @@ import { LoginPanel } from './login_panel'
 import { TargetForm } from './target_form'
 import { tomAPI } from './config'
 
-export interface Target {
-  name: string;
-  ra: string;
-  dec: string;
-  epoch: string;
-}
-
 export interface UserInfo {
   status: string;
   Id: number;
@@ -67,7 +60,6 @@ export const StyledPaper = styled(Paper, {
 function App() {
   const [_, setObservations] = useState([])
   const [selectedObservation, setSelectedObservation] = useState<any>({})
-  const [target, setTarget] = useState<Target | undefined >(undefined)
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const [userinfo, setUserInfo] = useState<UserInfo | null>(null)
   const now = dayjs()
@@ -83,31 +75,6 @@ function App() {
     console.log('Theme:', newTheme)
     return newTheme
   }, [darkMode])
-
-
-
-  useEffect(() => {
-    const fetchTarget = async () => {
-      console.log('Fetching target for selected observation:', selectedObservation)
-      try {
-        const targId = selectedObservation.target
-        if (!targId) {
-          console.warn('No target ID found in selected observation')
-          return
-        }
-        const response = await fetch(`${tomAPI}/targets/${targId}?format=json`)
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-        const tgt = await response.json() as Target
-        console.log('Target fetched:', tgt)
-        setTarget(tgt)
-      } catch (error) {
-        console.error('Failed to fetch targets:', error)
-      }
-    }
-    fetchTarget()
-  }, [selectedObservation])
 
 
   useEffect(() => {
@@ -146,7 +113,7 @@ function App() {
         {userinfo ? (
           <>
             <SchedulePanel date={date} setDate={setDate} schedule={schedule} setSchedule={setSchedule} />
-            <TargetForm target={target}/>
+            <TargetForm userinfo={userinfo} />
             <TooForm obsid={String(userinfo.Id)} schedule={schedule} semester={semester} date={date} userinfo={userinfo} />
           </>
         ) : (
