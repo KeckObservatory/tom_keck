@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CssBaseline, Paper, styled, ThemeProvider } from '@mui/material'
 import { handleTheme } from './theme'
 import { TopBar } from './top_bar'
@@ -7,7 +7,6 @@ import dayjs from 'dayjs'
 import { SchedulePanel, type ScheduleItem } from './schedule_panel'
 import { LoginPanel } from './login_panel'
 import { TargetForm } from './target_form'
-import { tomAPI } from './config'
 
 export interface UserInfo {
   status: string;
