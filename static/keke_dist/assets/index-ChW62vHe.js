@@ -43335,6 +43335,7 @@ const TargetForm = (props) => {
       if (userinfo) {
         const mytgt = { ...target };
         const planningToolTarget = tom_target_to_planning_tool_target(mytgt, String(userinfo.Id));
+        const body2 = { "targets": [planningToolTarget] };
         document.cookie = `observer=thisisfromtom=?obsid=${btoa(userinfo.Id.toString())}; domain=www3.keck.hawaii.edu; path=/;`;
         const response = await fetch(`${keckAPIURL}planning_tool/submitPlanningToolTarget`, {
           //credentials: "same-origin",
@@ -43343,7 +43344,7 @@ const TargetForm = (props) => {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(planningToolTarget)
+          body: JSON.stringify(body2)
         });
         if (!response.ok) {
           throw new Error(`Error sending target to Planning Tool: ${response.statusText}`);

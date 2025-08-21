@@ -105,6 +105,7 @@ export const TargetForm = (props: Props) => {
             if (userinfo) {
                 const mytgt = { ...target };
                 const planningToolTarget = tom_target_to_planning_tool_target(mytgt as unknown as TomTarget, String(userinfo.Id));
+                const body = {'targets': [planningToolTarget]};
                 document.cookie = `observer=thisisfromtom=?obsid=${btoa(userinfo.Id.toString())}; domain=www3.keck.hawaii.edu; path=/;`;
                 const response = await fetch(`${keckAPIURL}planning_tool/submitPlanningToolTarget`, {
                     //credentials: "same-origin",
@@ -113,7 +114,7 @@ export const TargetForm = (props: Props) => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(planningToolTarget),
+                    body: JSON.stringify(body),
                 });
 
                 if (!response.ok) {
