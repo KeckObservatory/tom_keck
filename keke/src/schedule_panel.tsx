@@ -1,4 +1,4 @@
-import { Stack, Paper, Box, Typography } from '@mui/material';
+import { Stack, Paper, Box, Typography, Skeleton } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -180,6 +180,7 @@ export const SchedulePanel = (props: Props) => {
     const { date, setDate, setSchedule } = props;
     const [instrumentsStatusResp, setInstrumentsStatusResp] = useState<InstrumentStatusResponse>({});
     const [scheduleImg, setScheduleImg] = useState<SchedImg[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
 
@@ -190,7 +191,7 @@ export const SchedulePanel = (props: Props) => {
                 for (let idx = 1; idx <= 2; idx++) {
                     const telnr = idx.toString();
                     const dateString = date.format('YYYY-MM-DD');
-                    const response = await fetch(`${keckAPILOCALURL}/schedule/getScheduleImage?date=${dateString}&telnr=${telnr}`);
+                    const response = await fetch(`${keckAPILOCALURL}schedule/getScheduleImage?date=${dateString}&telnr=${telnr}`);
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
@@ -227,7 +228,7 @@ export const SchedulePanel = (props: Props) => {
                 for (let idx = 1; idx <= 2; idx++) {
                     const telnr = idx.toString();
                     const dateString = date.format('YYYY-MM-DD');
-                    const response = await fetch(`${keckAPIURL}/schedule/getSchedule?date=${dateString}&telnr=${telnr}`);
+                    const response = await fetch(`${keckAPIURL}schedule/getSchedule?date=${dateString}&telnr=${telnr}`);
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
@@ -260,8 +261,10 @@ export const SchedulePanel = (props: Props) => {
 
         }
         console.log('Fetching schedule for date:', date.format('YYYY-MM-DD'));
+        setIsLoading(true);
         getSchedule();
         getScheduleImage();
+        setIsLoading(false);
 
     }, [date])
 
@@ -285,7 +288,13 @@ export const SchedulePanel = (props: Props) => {
                             setDate={setDate}
                         />
                     </Stack>
-                    <ScheduleTable scheduleImg={scheduleImg} instrumentStatusResp={instrumentsStatusResp} />
+                    { isLoading ? (
+                        <Box>
+                            <Typography variant="body1" align="center">Loading...</Typography>
+                            <Skeleton variant="rectangular" width={"100%"} height={400} />
+                        </Box>
+                    ) : <ScheduleTable scheduleImg={scheduleImg} instrumentStatusResp={instrumentsStatusResp} />
+                }
                 </Box>
             </StyledPaper>
         </Stack>

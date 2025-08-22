@@ -6,7 +6,7 @@ import { TooForm } from './too_form'
 import dayjs from 'dayjs'
 import { SchedulePanel, type ScheduleItem } from './schedule_panel'
 import { TargetForm } from './target_form'
-import { keckURL } from './config'
+import { keckBase } from './config'
 
 export interface UserInfo {
   status: string;
@@ -70,7 +70,7 @@ function App() {
 
   useEffect(() => {
     const handleUserinfo = async () => {
-      const resp = await fetch(`${keckURL}userinfo/`, {
+      const resp = await fetch(`${keckBase}/userinfo/`, {
         method: 'GET',
         credentials: 'include',
         headers: {
