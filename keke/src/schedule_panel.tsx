@@ -17,56 +17,40 @@ import { StyledPaper } from './App';
 
 interface ScheduleTableProps {
     scheduleImg: SchedImg[];
+    date: Dayjs;
     instrumentStatusResp: InstrumentStatusResponse;
 }
 
-export const ScheduleTable = ({ instrumentStatusResp, scheduleImg }: ScheduleTableProps) => {
+export const ScheduleTable = ({ instrumentStatusResp, scheduleImg, date }: ScheduleTableProps) => {
+
+    const interior = scheduleImg.length > 0 ? (
+        <Stack direction="column" spacing={2} justifyContent="center">
+            {scheduleImg.map((img, index) => (
+                <Box key={index} sx={{ textAlign: 'center' }}>
+                    <img src={`data:image/png;base64,${img.img}`} alt={`Schedule for TelNr ${img.TelNr}`} style={{ maxWidth: '100%', height: 'auto' }} />
+                    <Typography variant="caption">Telescope {img.TelNr}</Typography>
+                </Box>
+            ))}
+        </Stack>
+    ) : (
+        <>
+            <Typography variant="body1" align="center">Loading...</Typography>
+            <Skeleton variant="rectangular" width={"100%"} height={550} />
+        </>
+    );
+
+    const dateMatchesSchedule = date.format('YYYYMMDD') === scheduleImg.at(0)?.file.split('_')[1];
+
+    const scheduleLabel = dateMatchesSchedule ? `Schedule for ${date.format('MMMM D, YYYY')}` : `Schedule for ${date.format('MMMM D, YYYY')} Loading...`;
+
+
     return (
         <Grid container spacing={12} justifyContent="center">
             <Grid size={6} justifyContent='center'>
-                {/* <Typography variant="h6" align="center">Schedule</Typography>
-                <TableContainer sx={{ maxWidth: 651, justifyContent: 'center' }} component={Paper}>
-                    <Table sx={{ maxWidth: 650, justifyContent: 'center' }} size='small' aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Instrument</TableCell>
-                                <TableCell align="right">Start Time - End Time</TableCell>
-                                <TableCell>Institution</TableCell>
-                                <TableCell align="right">PI</TableCell>
-                                <TableCell align="right">Telescope</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {schedule.map((row) => (
-                                <TableRow
-                                    key={row.SchedId}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                    <TableCell component="th" scope="row">
-                                        {row.Instrument}
-                                    </TableCell>
-                                    <TableCell align="right">{row.StartTime + ' - ' + row.EndTime}</TableCell>
-                                    <TableCell align="right">{row.Institution}</TableCell>
-                                    <TableCell align="right">{row.Principal}</TableCell>
-                                    <TableCell align="right">{row.TelNr}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer> */}
-                    { scheduleImg.length > 0 && (
-                        <Box sx={{ marginTop: '16px' }}>
-                            <Typography variant="h6" align="center">Schedule</Typography>
-                            <Stack direction="column" spacing={2} justifyContent="center">
-                                {scheduleImg.map((img, index) => (
-                                    <Box key={index} sx={{ textAlign: 'center' }}>
-                                        <img src={`data:image/png;base64,${img.img}`} alt={`Schedule for TelNr ${img.TelNr}`} style={{ maxWidth: '100%', height: 'auto' }} />
-                                        <Typography variant="caption">Telescope {img.TelNr}</Typography>
-                                    </Box>
-                                ))}
-                            </Stack>
-                        </Box>
-                    )}
+                <Box sx={{ marginTop: '16px' }}>
+                    <Typography variant="h6" align="center">{scheduleLabel}</Typography>
+                    {interior}
+                </Box>
             </Grid>
             <Grid size={6} justifyContent='center'>
                 <Typography variant="h6" align="center">Instrument ToO Readiness</Typography>
@@ -124,7 +108,7 @@ export const DayjsDatePicker = ({ date, setDate }: { date: Dayjs, setDate: (date
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
                 label="Observing Date (HT)"
-                value={date} 
+                value={date}
                 onChange={(newValue) => newValue && setDate(newValue)} />
         </LocalizationProvider>
     );
@@ -180,7 +164,6 @@ export const SchedulePanel = (props: Props) => {
     const { date, setDate, setSchedule } = props;
     const [instrumentsStatusResp, setInstrumentsStatusResp] = useState<InstrumentStatusResponse>({});
     const [scheduleImg, setScheduleImg] = useState<SchedImg[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
 
@@ -261,10 +244,8 @@ export const SchedulePanel = (props: Props) => {
 
         }
         console.log('Fetching schedule for date:', date.format('YYYY-MM-DD'));
-        setIsLoading(true);
         getSchedule();
         getScheduleImage();
-        setIsLoading(false);
 
     }, [date])
 
@@ -288,13 +269,7 @@ export const SchedulePanel = (props: Props) => {
                             setDate={setDate}
                         />
                     </Stack>
-                    { isLoading ? (
-                        <Box>
-                            <Typography variant="body1" align="center">Loading...</Typography>
-                            <Skeleton variant="rectangular" width={"100%"} height={400} />
-                        </Box>
-                    ) : <ScheduleTable scheduleImg={scheduleImg} instrumentStatusResp={instrumentsStatusResp} />
-                }
+                    <ScheduleTable date={date} scheduleImg={scheduleImg} instrumentStatusResp={instrumentsStatusResp} />
                 </Box>
             </StyledPaper>
         </Stack>

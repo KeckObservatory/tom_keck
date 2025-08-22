@@ -58,6 +58,7 @@ export const StyledPaper = styled(Paper, {
 
 function App() {
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
+
   const [userinfo, setUserInfo] = useState<UserInfo | null>(null)
   const now = dayjs()
   console.log('Current time:', now.format('YYYY-MM-DD HH:mm:ss'))
@@ -119,7 +120,7 @@ function App() {
         ) : (
           <Skeleton variant="rectangular" width={"100%"} height={118} />
         )}
-          {/* <LoginPanel setUserInfo={setUserInfo} /> */}
+        {/* <LoginPanel setUserInfo={setUserInfo} /> */}
       </ThemeProvider>
     </div>
   )
