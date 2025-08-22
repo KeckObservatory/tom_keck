@@ -5,7 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useEffect, useState } from 'react';
-import { keckAPIURL } from './config';
+import { keckAPILOCALURL, keckAPIURL } from './config';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -17,14 +17,15 @@ import { StyledPaper } from './App';
 
 interface ScheduleTableProps {
     schedule: ScheduleItem[]
+    scheduleImg: SchedImg[];
     instrumentStatusResp: InstrumentStatusResponse;
 }
 
-export const ScheduleTable = ({ schedule, instrumentStatusResp }: ScheduleTableProps) => {
+export const ScheduleTable = ({ schedule, instrumentStatusResp, scheduleImg }: ScheduleTableProps) => {
     return (
         <Grid container spacing={12} justifyContent="center">
-            <Grid size={4} justifyContent='center'>
-                <Typography variant="h6" align="center">Schedule</Typography>
+            <Grid size={6} justifyContent='center'>
+                {/* <Typography variant="h6" align="center">Schedule</Typography>
                 <TableContainer sx={{ maxWidth: 651, justifyContent: 'center' }} component={Paper}>
                     <Table sx={{ maxWidth: 650, justifyContent: 'center' }} size='small' aria-label="simple table">
                         <TableHead>
@@ -53,9 +54,22 @@ export const ScheduleTable = ({ schedule, instrumentStatusResp }: ScheduleTableP
                             ))}
                         </TableBody>
                     </Table>
-                </TableContainer>
+                </TableContainer> */}
+                    { scheduleImg.length > 0 && (
+                        <Box sx={{ marginTop: '16px' }}>
+                            <Typography variant="h6" align="center">Schedule</Typography>
+                            <Stack direction="column" spacing={2} justifyContent="center">
+                                {scheduleImg.map((img, index) => (
+                                    <Box key={index} sx={{ textAlign: 'center' }}>
+                                        <img src={`data:image/png;base64,${img.img}`} alt={`Schedule for TelNr ${img.TelNr}`} style={{ maxWidth: '100%', height: 'auto' }} />
+                                        <Typography variant="caption">Telescope {img.TelNr}</Typography>
+                                    </Box>
+                                ))}
+                            </Stack>
+                        </Box>
+                    )}
             </Grid>
-            <Grid size={4} justifyContent='center'>
+            <Grid size={6} justifyContent='center'>
                 <Typography variant="h6" align="center">Instrument ToO Readiness</Typography>
                 <TableContainer sx={{ maxWidth: 1000, justifyContent: 'center' }} component={Paper}>
                     <Table sx={{ maxWidth: 1000, justifyContent: 'center' }} size='small' aria-label="simple table">
@@ -74,6 +88,12 @@ export const ScheduleTable = ({ schedule, instrumentStatusResp }: ScheduleTableP
                                     }
                                     if (!a.TooReady && b.TooReady) {
                                         return 1; // b comes before a
+                                    }
+                                    if ((a.TelNr ?? 0) > (b.TelNr ?? 0)) {
+                                        return 1; // a comes before b
+                                    }
+                                    if ((a.TelNr ?? 0) < (b.TelNr ?? 0)) {
+                                        return -1; // b comes before a
                                     }
                                     return 0; // keep original order if both are the same
                                 })
@@ -152,11 +172,55 @@ export interface InstrumentStatusResponse {
     [key: string]: InstrumentStatus;
 }
 
+interface SchedImg {
+    file: string;
+    TelNr?: string;
+    img: string;
+}
+
 export const SchedulePanel = (props: Props) => {
     const { date, setDate, schedule, setSchedule } = props;
     const [instrumentsStatusResp, setInstrumentsStatusResp] = useState<InstrumentStatusResponse>({});
+    const [scheduleImg, setScheduleImg] = useState<SchedImg[]>([]);
 
     useEffect(() => {
+
+        const getScheduleImage = async () => {
+            console.log('TooForm component mounted with date:', date);
+            let schedImg = [] as SchedImg[];
+            try {
+                for (let idx = 1; idx <= 2; idx++) {
+                    const telnr = idx.toString();
+                    const dateString = date.format('YYYY-MM-DD');
+                    const response = await fetch(`${keckAPILOCALURL}/schedule/getScheduleImage?date=${dateString}&telnr=${telnr}`);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    let tsched = await response.json() as SchedImg;
+                    tsched = { ...tsched, TelNr: telnr };
+                    schedImg = [...schedImg, tsched];
+
+                }
+                setScheduleImg(schedImg);
+            } catch (error) {
+                console.error('Failed to fetch schedule:', error);
+            }
+
+            try {
+                const response2 = await fetch(`${keckAPIURL}/too/getInstrumentsTooStatus?date=${date.format('YYYY-MM-DD')}`);
+                if (!response2.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                let instrStatus = await response2.json() as InstrumentStatusResponse;
+                instrStatus = Object.fromEntries(Object.entries(instrStatus).filter(([_, status]) => status.Instrument !== null
+                ));
+
+                setInstrumentsStatusResp(instrStatus);
+            } catch (error) {
+                console.error('Failed to fetch instruments:', error);
+            }
+
+        }
 
         const getSchedule = async () => {
             console.log('TooForm component mounted with date:', date);
@@ -199,6 +263,7 @@ export const SchedulePanel = (props: Props) => {
         }
         console.log('Fetching schedule for date:', date.format('YYYY-MM-DD'));
         getSchedule();
+        getScheduleImage();
 
     }, [date])
 
@@ -212,6 +277,9 @@ export const SchedulePanel = (props: Props) => {
             maxWidth='100%'
         >
             <StyledPaper>
+                <Typography variant="h5" align="center" sx={{ marginBottom: '16px' }}>
+                    Schedule
+                </Typography>
                 <Box>
                     <Stack sx={{ marginBottom: '24px' }} width="100%" direction="row" justifyContent='center' spacing={2}>
                         <DayjsDatePicker
@@ -219,7 +287,7 @@ export const SchedulePanel = (props: Props) => {
                             setDate={setDate}
                         />
                     </Stack>
-                    <ScheduleTable schedule={schedule} instrumentStatusResp={instrumentsStatusResp} />
+                    <ScheduleTable scheduleImg={scheduleImg} schedule={schedule} instrumentStatusResp={instrumentsStatusResp} />
                 </Box>
             </StyledPaper>
         </Stack>

@@ -6,13 +6,13 @@ import Typography from '@mui/material/Typography'
 import DoorFrontIcon from '@mui/icons-material/DoorFront';
 import IconButton from '@mui/material/IconButton';
 import { keckURL } from './config';
+import type { UserInfo } from './App';
 
-// interface Props {
-//   darkMode: boolean,
-//   handleThemeChange: () => void
-// }
+interface Props {
+  userinfo?: UserInfo;
+}
 
-export function TopBar() {
+export function TopBar(props: Props) {
 
   const handleHomepageClick = () => {
     window.open(keckURL, "_self")
@@ -30,6 +30,18 @@ export function TopBar() {
           paddingLeft: '20px'
         }}
       >
+        <Typography
+          component="h1"
+          variant="h6"
+          color="inherit"
+          noWrap
+          sx={{
+            marginLeft: '12px',
+            flexGrow: 1,
+          }}
+        >
+          {props.userinfo?.Title} {props.userinfo?.FirstName} {props.userinfo?.LastName}
+        </Typography>
         <Typography
           component="h1"
           variant="h6"

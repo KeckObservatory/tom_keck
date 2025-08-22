@@ -2,7 +2,7 @@ import { Tooltip, TextField, Stack, Box, Typography, FormControl, InputLabel, Se
 import { StyledPaper } from './App';
 import { useEffect, useState } from 'react';
 import { keckAPIURL } from './config';
-import type { ScheduleItem } from './schedule_panel';
+import { DayjsDatePicker, type ScheduleItem } from './schedule_panel';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimeField } from '@mui/x-date-pickers/TimeField';
@@ -31,6 +31,7 @@ export interface Props {
     obsid: string;
     schedule: ScheduleItem[];
     date: any;
+    setDate: (date: dayjs.Dayjs) => void;
     userinfo: any;
 }
 
@@ -93,7 +94,7 @@ interface TooInterruptResult {
 }
 
 export const TooForm = (props: Props) => {
-    const { semester, obsid, schedule, date, userinfo } = props;
+    const { semester, obsid, schedule, date, setDate, userinfo } = props;
     const [toos, setToos] = useState<TooItem[]>([]);
     const [tooRequests, setTooRequests] = useState<Too[]>([]);
     const [selectedTooItem, setSelectedTooItem] = useState<TooItem | null>(null);
@@ -237,10 +238,19 @@ export const TooForm = (props: Props) => {
             <StyledPaper
             >
                 <Box>
+                    <Typography variant="h5" align="center" sx={{ marginBottom: '16px' }}>
+                        ToO Form
+                    </Typography>
                     <Stack sx={{ marginBottom: '24px' }} width="100%" direction="column" justifyContent='center' spacing={2}>
-                        <Tooltip title={'select existing ToO Request to edit/view'}>
+                        <Stack sx={{ marginBottom: '24px' }} width="100%" direction="row" justifyContent='center' spacing={2}>
+                            <DayjsDatePicker
+                                date={date}
+                                setDate={setDate}
+                            />
+                        </Stack>
+                        <Tooltip title={'Select existing ToO Request to edit/view'}>
                             <FormControl fullWidth sx={{ width: 150, alignSelf: "center" }}>
-                                <InputLabel id="select-too-request">Program ID</InputLabel>
+                                <InputLabel id="select-too-request">Select ToO</InputLabel>
                                 <Select
                                     labelId="select-too-request"
                                     id="select-too-request"
@@ -284,6 +294,8 @@ export const TooForm = (props: Props) => {
                                 </Select>
                             </FormControl>
                         </Tooltip>
+                    </Stack>
+                    <Stack sx={{ marginBottom: '24px' }} width="100%" direction="row" justifyContent='center' spacing={2}>
                         <Typography variant="h6" sx={{ alignSelf: 'center' }}>
                             {`Remaining Institution Hours: ${selectedTooItem?.HoursRemainInstitution || '0'}`}
                         </Typography>
@@ -293,6 +305,8 @@ export const TooForm = (props: Props) => {
                         <Typography variant="h6" sx={{ alignSelf: 'center' }}>
                             {`Can Interrupt Institutions: ${selectedTooItem?.InterruptList || 'No ToO Program selected'}`}
                         </Typography>
+                    </Stack>
+                    <Stack sx={{ marginBottom: '24px' }} width="100%" direction="row" justifyContent='center' spacing={2}>
                         <Tooltip title={'select Interrupt type'}>
                             <FormControl fullWidth sx={{ width: 250, alignSelf: "center" }}>
                                 <InputLabel id="interrupt-type">Interrupt type</InputLabel>
@@ -359,6 +373,8 @@ export const TooForm = (props: Props) => {
                                 </Select>
                             </FormControl>
                         </Tooltip>
+                    </Stack>
+                    <Stack sx={{ marginBottom: '24px' }} width="100%" direction="row" justifyContent='center' spacing={2}>
                         <Tooltip title={'Select Flexibility'}>
                             <FormControl fullWidth sx={{ width: 250, alignSelf: "center" }}>
                                 <InputLabel id="flex-time">Flexibility</InputLabel>
@@ -402,76 +418,79 @@ export const TooForm = (props: Props) => {
                             </FormControl>
                         </Tooltip>
                         <TextField sx={{ width: 250, alignSelf: "center" }} label="Duration" value={too.duration} />
-                        <Tooltip title={'Include any notes'}>
-                            <FormControl fullWidth sx={{ width: 250, alignSelf: "center" }}>
-                                <TextField
-                                    id="notes"
-                                    label="Notes"
-                                    placeholder="Enter any notes here"
-                                    multiline
-                                    variant="outlined"
-                                    onChange={(evt) => {
-                                        setToo(prevToo => ({
-                                            ...prevToo,
-                                            pinotes: evt.target.value,
-                                        }));
-                                    }}
-                                />
-                            </FormControl>
-                        </Tooltip>
-                        <TextField sx={{ width: 250, alignSelf: "center" }} label="Duration" value={too.duration} />
                     </Stack>
+                    <Stack sx={{ marginBottom: '24px' }} width="100%" direction="row" justifyContent='center' spacing={2}>
+                    <Tooltip title={'Include any notes'}>
+                        <FormControl fullWidth sx={{ width: 250, alignSelf: "center" }}>
+                            <TextField
+                                id="notes"
+                                label="Notes"
+                                placeholder="Enter any notes here"
+                                multiline
+                                variant="outlined"
+                                onChange={(evt) => {
+                                    setToo(prevToo => ({
+                                        ...prevToo,
+                                        pinotes: evt.target.value,
+                                    }));
+                                }}
+                            />
+                        </FormControl>
+                    </Tooltip>
+                    <TextField sx={{ width: 250, alignSelf: "center" }} label="Duration" value={too.duration} />
                     <StartTimePicker date={date} time={too.starttime} setTime={(time) => setToo(prevToo => ({ ...prevToo, starttime: time }))} />
-                    <Stack direction="row" justifyContent="center" spacing={2} sx={{ paddingBottom: '16px' }}>
-                        <Tooltip title={'Save ToO request draft'}>
-                            <Button
-                                variant="contained"
-                                onClick={() => call_save_too('draft')}
-                                disabled={!too.instrument || !too.obsdate || !too.starttime || !too.duration || !too.interruptproj || !too.interrupttype}
-                            >
-                                Save ToO Request
-                            </Button>
+                </Stack>
+                <Stack direction="row" justifyContent="center" spacing={2} sx={{ paddingBottom: '16px' }}>
+                    <Tooltip title={'Save ToO request draft'}>
+                        <Button
+                            variant="contained"
+                            onClick={() => call_save_too('draft')}
+                            disabled={!too.instrument || !too.obsdate || !too.starttime || !too.duration || !too.interruptproj || !too.interrupttype}
+                        >
+                            Save ToO Request
+                        </Button>
+                    </Tooltip>
+                    <Tooltip title={'Submit ToO request'}>
+                        <Button
+                            variant="contained"
+                            onClick={() => call_save_too('submit')}
+                            disabled={!too.instrument || !too.obsdate || !too.starttime || !too.duration || !too.interruptproj || !too.interrupttype}
+                        >
+                            Submit ToO Request
+                        </Button>
+                    </Tooltip>
+                    <Tooltip title={'Cancel ToO request'}>
+                        <Button
+                            variant="contained"
+                            onClick={() => {
+                                call_too_cancel(too);
+                            }}
+                            disabled={!too.tooid}
+                        >
+                            Cancel ToO Request
+                        </Button>
+                    </Tooltip>
+                    <Tooltip title={'Validate ToO request'}>
+                        <Button
+                            variant="contained"
+                            onClick={() => {
+                                call_too_can_interrupt(too);
+                            }}
+                        >
+                            Validate ToO Request
+                        </Button>
+                    </Tooltip>
+                    {result && !result.canInterrupt && (
+                        <Tooltip title={'ToO cannot be interrupted'}>
+                            <Typography variant="h6" sx={{ alignSelf: 'center' }}>
+                                ToO Cannot be Interrupted
+                            </Typography>
                         </Tooltip>
-                        <Tooltip title={'Submit ToO request'}>
-                            <Button
-                                variant="contained"
-                                onClick={() => call_save_too('submit')}
-                                disabled={!too.instrument || !too.obsdate || !too.starttime || !too.duration || !too.interruptproj || !too.interrupttype}
-                            >
-                                Submit ToO Request
-                            </Button>
-                        </Tooltip>
-                        <Tooltip title={'Cancel ToO request'}>
-                            <Button
-                                variant="contained"
-                                onClick={() => {
-                                    call_too_cancel(too);
-                                }}
-                                disabled={!too.tooid}
-                            >
-                                Cancel ToO Request
-                            </Button>
-                        </Tooltip>
-                        <Tooltip title={'Validate ToO request'}>
-                            <Button
-                                variant="contained"
-                                onClick={() => {
-                                    call_too_can_interrupt(too);
-                                }}
-                            >
-                                Validate ToO Request
-                            </Button>
-                        </Tooltip>
-                        {result && !result.canInterrupt && (
-                            <Tooltip title={'ToO cannot be interrupted'}>
-                                <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-                                    ToO Cannot be Interrupted
-                                </Typography>
-                            </Tooltip>
-                        )}
-                    </Stack>
-                </Box>
-            </StyledPaper>
+                    )}
+                </Stack>
+                {/* </Stack> */}
+            </Box>
+        </StyledPaper>
         </Stack >
     )
 }

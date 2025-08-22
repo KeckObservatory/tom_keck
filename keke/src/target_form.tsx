@@ -105,7 +105,7 @@ export const TargetForm = (props: Props) => {
             if (userinfo) {
                 const mytgt = { ...target };
                 const planningToolTarget = tom_target_to_planning_tool_target(mytgt as unknown as TomTarget, String(userinfo.Id));
-                const body = {'targets': [planningToolTarget]};
+                const body = { 'targets': [planningToolTarget] };
                 document.cookie = `observer=thisisfromtom=?obsid=${btoa(userinfo.Id.toString())}; domain=www3.keck.hawaii.edu; path=/;`;
                 const response = await fetch(`${keckAPIURL}planning_tool/submitPlanningToolTarget`, {
                     //credentials: "same-origin",
@@ -139,30 +139,31 @@ export const TargetForm = (props: Props) => {
         >
             <StyledPaper
             >
-                <Box>
-                    <Stack sx={{ marginBottom: '24px' }} width="100%" direction="row" justifyContent='center' spacing={2}>
-                        <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-                            {`Target name: ${target?.name || 'No target selected'}`}
-                        </Typography>
-                        <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-                            {`RA: ${target?.ra}`}
-                        </Typography>
-                        <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-                            {`Dec: ${target?.dec}`}
-                        </Typography>
-                        <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-                            {`Epoch: ${target?.epoch}`}
-                        </Typography>
-                    </Stack>
-                    <Tooltip title={'Visualize target using Keck\'s Planning Tool'}>
-                        <Button
-                            variant="contained"
-                            onClick={handle_send_to_planning_tool}
-                        >
-                            Send Target to Planning Tool
-                        </Button>
-                    </Tooltip>
-                </Box>
+                <Typography variant="h5" align="center" sx={{ marginBottom: '16px' }}>
+                    Target Form
+                </Typography>
+                <Stack sx={{ marginBottom: '24px' }} width="100%" direction="row" justifyContent='center' spacing={2}>
+                    <Typography variant="h6" sx={{ alignSelf: 'center' }}>
+                        {`Target name: ${target?.name || 'No target selected'}`}
+                    </Typography>
+                    <Typography variant="h6" sx={{ alignSelf: 'center' }}>
+                        {`RA: ${target?.ra}`}
+                    </Typography>
+                    <Typography variant="h6" sx={{ alignSelf: 'center' }}>
+                        {`Dec: ${target?.dec}`}
+                    </Typography>
+                    <Typography variant="h6" sx={{ alignSelf: 'center' }}>
+                        {`Epoch: ${target?.epoch}`}
+                    </Typography>
+                </Stack>
+                <Tooltip title={'Visualize target using Keck\'s Planning Tool'}>
+                    <Button
+                        variant="contained"
+                        onClick={handle_send_to_planning_tool}
+                    >
+                        Send Target to Planning Tool
+                    </Button>
+                </Tooltip>
             </StyledPaper>
         </Stack >
     )

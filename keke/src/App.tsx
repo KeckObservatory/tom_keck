@@ -1,12 +1,13 @@
-import { useMemo, useState } from 'react'
-import { CssBaseline, Paper, styled, ThemeProvider } from '@mui/material'
+import { useEffect, useMemo, useState } from 'react'
+import { CssBaseline, Grid, Paper, Skeleton, Stack, styled, ThemeProvider } from '@mui/material'
 import { handleTheme } from './theme'
 import { TopBar } from './top_bar'
 import { TooForm } from './too_form'
 import dayjs from 'dayjs'
 import { SchedulePanel, type ScheduleItem } from './schedule_panel'
-import { LoginPanel } from './login_panel'
+import { LoginPanel } from './tom_login_panel'
 import { TargetForm } from './target_form'
+import { keckAPIURL } from './config'
 
 export interface UserInfo {
   status: string;
@@ -67,6 +68,27 @@ function App() {
 
   const darkMode = false // This can be replaced with a state or prop to toggle dark mode
 
+
+  useEffect(() => {
+    const handleUserinfo = async () => {
+      const resp = await fetch(`${keckAPIURL}/planning_tool/userinfo/`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      // Handle token verification failure
+      if (!resp.ok) {
+        console.error('userinfo fetch failed:', resp.statusText)
+        return
+      }
+      setUserInfo && setUserInfo(await resp.json())
+      console.log('Userinfo fetched successfully.')
+    }
+    handleUserinfo()
+  }, [])
+
   const theme = useMemo(() => {
     const newTheme = handleTheme(darkMode)
     console.log('Theme:', newTheme)
@@ -81,16 +103,24 @@ function App() {
     }}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <TopBar />
+        <TopBar userinfo={userinfo} />
         {userinfo ? (
           <>
-            <SchedulePanel date={date} setDate={setDate} schedule={schedule} setSchedule={setSchedule} />
-            <TargetForm userinfo={userinfo} />
-            <TooForm obsid={String(userinfo.Id)} schedule={schedule} semester={semester} date={date} userinfo={userinfo} />
+            <Grid container spacing={12} justifyContent="center">
+              <Grid size={4} justifyContent='center'>
+                <TooForm obsid={String(userinfo.Id)} schedule={schedule} semester={semester} date={date} setDate={setDate} userinfo={userinfo} />
+              </Grid>
+              <Grid size={7} justifyContent='center'>
+                <SchedulePanel date={date} setDate={setDate} schedule={schedule} setSchedule={setSchedule} />
+                <TargetForm userinfo={userinfo} />
+              </Grid>
+
+            </Grid>
           </>
         ) : (
-          <LoginPanel setUserInfo={setUserInfo} />
+          <Skeleton variant="rectangular" width={"100%"} height={118} />
         )}
+          {/* <LoginPanel setUserInfo={setUserInfo} /> */}
       </ThemeProvider>
     </div>
   )
