@@ -16,12 +16,11 @@ import { StyledPaper } from './App';
 
 
 interface ScheduleTableProps {
-    schedule: ScheduleItem[]
     scheduleImg: SchedImg[];
     instrumentStatusResp: InstrumentStatusResponse;
 }
 
-export const ScheduleTable = ({ schedule, instrumentStatusResp, scheduleImg }: ScheduleTableProps) => {
+export const ScheduleTable = ({ instrumentStatusResp, scheduleImg }: ScheduleTableProps) => {
     return (
         <Grid container spacing={12} justifyContent="center">
             <Grid size={6} justifyContent='center'>
@@ -134,7 +133,6 @@ export const DayjsDatePicker = ({ date, setDate }: { date: Dayjs, setDate: (date
 export interface Props {
     date: Dayjs;
     setDate: (date: Dayjs) => void;
-    schedule: ScheduleItem[];
     setSchedule: (schedule: ScheduleItem[]) => void;
 }
 
@@ -179,7 +177,7 @@ interface SchedImg {
 }
 
 export const SchedulePanel = (props: Props) => {
-    const { date, setDate, schedule, setSchedule } = props;
+    const { date, setDate, setSchedule } = props;
     const [instrumentsStatusResp, setInstrumentsStatusResp] = useState<InstrumentStatusResponse>({});
     const [scheduleImg, setScheduleImg] = useState<SchedImg[]>([]);
 
@@ -287,7 +285,7 @@ export const SchedulePanel = (props: Props) => {
                             setDate={setDate}
                         />
                     </Stack>
-                    <ScheduleTable scheduleImg={scheduleImg} schedule={schedule} instrumentStatusResp={instrumentsStatusResp} />
+                    <ScheduleTable scheduleImg={scheduleImg} instrumentStatusResp={instrumentsStatusResp} />
                 </Box>
             </StyledPaper>
         </Stack>

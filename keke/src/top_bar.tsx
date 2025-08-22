@@ -5,17 +5,17 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography'
 import DoorFrontIcon from '@mui/icons-material/DoorFront';
 import IconButton from '@mui/material/IconButton';
-import { keckURL } from './config';
+import { keckPublicURL } from './config';
 import type { UserInfo } from './App';
 
 interface Props {
-  userinfo?: UserInfo;
+  userinfo: UserInfo | null;
 }
 
 export function TopBar(props: Props) {
 
   const handleHomepageClick = () => {
-    window.open(keckURL, "_self")
+    window.open(keckPublicURL, "_self")
   }
 
 
