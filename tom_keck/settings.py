@@ -238,8 +238,6 @@ FACILITIES = {
         'SWIFT_SHARED_SECRET': os.getenv('SWIFT_SHARED_SECRET', 'anonymous'),
     },
     'KECK': {
-        'KECK_USERNAME': os.getenv('KECK_USERNAME', 'anonymous'),
-        'KECK_PASSWORD': os.getenv('KECK_PASSWORD', 'anonymous')
     },
     'GEM': {
         'portal_url': {

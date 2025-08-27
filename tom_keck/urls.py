@@ -14,13 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, include
-from custom_code.views import keck_get_userinfo, keke, keck_verify_token
-from custom_code.views import KekeLogin 
 
 urlpatterns = [
     path('', include('tom_common.urls')),
-    path('keke/', keke, name='keke'),
-    path('api/keck_login/', KekeLogin.as_view(), name='keck_login'),
-    path('api/keck_verify_token/', keck_verify_token, name='keck_verify_token'),
-    path('api/keck_get_userinfo/', keck_get_userinfo, name='keck_get_userinfo'),
 ]
