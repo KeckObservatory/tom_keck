@@ -5,7 +5,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography'
 import DoorFrontIcon from '@mui/icons-material/DoorFront';
 import IconButton from '@mui/material/IconButton';
-import { keckPublicURL } from './config';
+import { keckObserverHomepageURL } from './config';
 import type { UserInfo } from './App';
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
 export function TopBar(props: Props) {
 
   const handleHomepageClick = () => {
-    window.open(keckPublicURL, "_self")
+    window.open(keckObserverHomepageURL, "_self")
   }
 
 
