@@ -46,7 +46,7 @@ export interface Props {
     userinfo: any;
 }
 
-type ActionType = 'draft' | 'submit' | 'edit';
+type ActionType = 'draft' | 'submit' | 'edit' | 'created';
 type InterruptType = 'partner' | 'institution';
 
 const INTERRUPT_TYPES: InterruptType[] = ['partner', 'institution'];
@@ -91,6 +91,8 @@ export interface Too {
     interrupttype: InterruptType;
     skipsubmitwarnings?: number;
     instrconfigs?: object[];
+    reqstatus?: string;
+    starlist?: string;
 }
 
 
@@ -235,6 +237,8 @@ export const TooForm = (props: Props) => {
 
     const projCodes = tooItems.map(tooItem => tooItem.ProjCode);
     const incompleteToo = !too.instrument || !too.obsdate || !too.starttime || !too.duration || !too.interruptproj || !too.interrupttype;
+    const submitMsg = too.reqstatus === 'submitted' ? 'Edit Submitted ToO' : too.reqstatus==='draft' ? 'Edit ToO Draft' : 'Create ToO'
+    const saveType: ActionType = too.reqstatus === 'submitted' ? 'edit' : 'draft'
 
     return (
         <Stack sx={{
@@ -258,7 +262,7 @@ export const TooForm = (props: Props) => {
                                 setDate={setDate}
                             />
                         </Stack>
-                        <Stack width="100%" direction="column" justifyContent='center' spacing={2}>
+                        <Stack width="100%" direction="row" justifyContent='center' spacing={2}>
                             <Tooltip title={'Select existing ToO Request to edit/view'} placement='right'>
                                 <FormControl fullWidth sx={{ width: 150, alignSelf: "center" }}>
                                     <InputLabel id="select-too-request">Select ToO</InputLabel>
@@ -285,7 +289,7 @@ export const TooForm = (props: Props) => {
                                 </FormControl>
                             </Tooltip>
                             <Button
-                                variant="outlined"
+                                variant="contained"
                                 onClick={clear_form}
                                 sx={{ width: 150, alignSelf: "center" }}
                             >
@@ -333,7 +337,7 @@ export const TooForm = (props: Props) => {
                                 sx={{ width: 250, alignSelf: "center" }}
                                 label="Target Name"
                                 slotProps={{ inputLabel: { shrink: too.target ? true : false } }}
-                                value={too.target}
+                                value={too.target ?? ''}
                                 onChange={(evt) => setToo(prevToo => ({ ...prevToo, target: evt.target.value }))}
                             />
                         </Tooltip>
@@ -408,6 +412,7 @@ export const TooForm = (props: Props) => {
                                 </Select>
                             </FormControl>
                         </Tooltip>
+
                     </Stack>
                     <Stack sx={{ marginBottom: '24px' }} width="100%" direction="row" justifyContent='center' spacing={2}>
                         <Tooltip title={'Select Flexibility'} placement='right'>
@@ -455,7 +460,8 @@ export const TooForm = (props: Props) => {
                         <TextField
                             slotProps={{ inputLabel: { shrink: true } }}
                             sx={{ width: 250, alignSelf: "center" }}
-                            label="Duration" value={too.duration}
+                            label="Request Status"
+                            value={too.reqstatus ?? ''}
                         />
                     </Stack>
                     <Stack sx={{ marginBottom: '24px' }} width="100%" direction="row" justifyContent='center' spacing={2}>
@@ -479,16 +485,21 @@ export const TooForm = (props: Props) => {
                             </FormControl>
                         </Tooltip>
                         <TextField sx={{ width: 250, alignSelf: "center" }} label="Duration" value={too.duration} />
-                        <StartTimePicker date={date} time={too.starttime} setTime={(time) => setToo(prevToo => ({ ...prevToo, starttime: time }))} />
+                        <TextField sx={{ width: 250, alignSelf: "center" }} label="Duration" value={too.reqstatus} />
+                        <StartTimePicker
+                            date={date}
+                            time={too.starttime}
+                            setTime={(time) => setToo(prevToo => ({ ...prevToo, starttime: time }))}
+                        />
                     </Stack>
                     <Stack direction="row" justifyContent="center" spacing={2} sx={{ paddingBottom: '16px' }}>
                         <Tooltip title={'Save ToO request draft'}>
                             <Button
                                 variant="contained"
-                                onClick={() => call_save_too('draft')}
+                                onClick={() => call_save_too(saveType)}
                                 disabled={incompleteToo}
                             >
-                                Save ToO as Draft
+                                {submitMsg}
                             </Button>
                         </Tooltip>
                         <Tooltip title={'Submit ToO request'}>
