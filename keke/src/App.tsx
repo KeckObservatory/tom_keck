@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CssBaseline, Grid, Paper, Skeleton, styled, ThemeProvider } from '@mui/material'
+import { CssBaseline, Paper, Skeleton, Stack, styled, ThemeProvider } from '@mui/material'
 import { handleTheme } from './theme'
 import { TopBar } from './top_bar'
 import { TooForm } from './too_form'
@@ -105,28 +105,24 @@ function App() {
         <CssBaseline />
         <TopBar userinfo={userinfo} />
         {userinfo ? (
-          <>
-            <Grid container spacing={12} justifyContent="center">
-              <Grid size={4} justifyContent='center'>
+            <Stack width='100%' direction="column" spacing={2} justifyContent="center">
+              <Stack width='100%' direction="row" spacing={2} justifyContent="center">
                 <TooForm obsid={String(userinfo.Id)} schedule={schedule} semester={semester} date={date} setDate={setDate} userinfo={userinfo} />
-              </Grid>
-              <Grid size={7} justifyContent='center'>
                 <SchedulePanel date={date} setDate={setDate} setSchedule={setSchedule} />
-                {
-                  get_target_from_url().name && (
-                    <TargetForm userinfo={userinfo} />
-                  )
-                }
-              </Grid>
-
-            </Grid>
-          </>
+              </Stack>
+              {
+                get_target_from_url().name && (
+                  <TargetForm userinfo={userinfo} />
+                )
+              }
+            </Stack>
         ) : (
           <Skeleton variant="rectangular" width={"100%"} height={118} />
-        )}
+        )
+        }
         {/* <LoginPanel setUserInfo={setUserInfo} /> */}
-      </ThemeProvider>
-    </div>
+      </ThemeProvider >
+    </div >
   )
 }
 

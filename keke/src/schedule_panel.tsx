@@ -24,7 +24,7 @@ interface ScheduleTableProps {
 export const ScheduleTable = ({ instrumentStatusResp, scheduleImg, date }: ScheduleTableProps) => {
 
     const interior = scheduleImg.length > 0 ? (
-        <Stack direction="column" spacing={2} justifyContent="center">
+        <Stack direction="column" spacing={0} justifyContent="center">
             {scheduleImg.map((img, index) => (
                 <Box key={index} sx={{ textAlign: 'center' }}>
                     <img src={`data:image/png;base64,${img.img}`} alt={`Schedule for TelNr ${img.TelNr}`} style={{ maxWidth: '100%', height: 'auto' }} />
@@ -46,13 +46,13 @@ export const ScheduleTable = ({ instrumentStatusResp, scheduleImg, date }: Sched
 
     return (
         <Grid container spacing={12} justifyContent="center">
-            <Grid size={6} justifyContent='center'>
+            <Grid size={8} justifyContent='center'>
                 <Box sx={{ marginTop: '16px' }}>
                     <Typography variant="h6" align="center">{scheduleLabel}</Typography>
                     {interior}
                 </Box>
             </Grid>
-            <Grid size={6} justifyContent='center'>
+            <Grid size={4} justifyContent='center'>
                 <Typography variant="h6" align="center">Instrument ToO Readiness</Typography>
                 <TableContainer sx={{ maxWidth: 1000, justifyContent: 'center' }} component={Paper}>
                     <Table sx={{ maxWidth: 1000, justifyContent: 'center' }} size='small' aria-label="simple table">

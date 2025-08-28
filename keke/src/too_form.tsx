@@ -198,7 +198,7 @@ export const TooForm = (props: Props) => {
             throw new Error('Failed to save ToO request: ' + respjson.message);
         }
         if (respjson.tooid) {
-            setToo(prevToo => ({ ...prevToo, tooid: respjson.tooid }));
+            setToo(prevToo => ({ ...prevToo, tooid: respjson.tooid, reqstatus: respjson.reqstatus}));
         }
 
         //update the too requests list
@@ -217,6 +217,7 @@ export const TooForm = (props: Props) => {
         console.log('ToO request deleted successfully.');
         //update the too requests list to exclude the deleted too
         setTooSavedTrigger(prev => prev + 1);
+        setToo(prevToo => ({ ...prevToo, tooid: undefined, reqstatus: undefined }));
     }
 
     const call_too_cancel = async (too: Too) => {
@@ -232,12 +233,19 @@ export const TooForm = (props: Props) => {
         if (!resp.ok) {
             throw new Error('Failed to save ToO request');
         }
-        console.log('ToO request saved successfully.');
+        const respjson = await resp.json();
+        respjson.status !== 'success' && console.error('Failed to cancel ToO request: ' + respjson.message);
+        if (respjson.status === 'success') {
+            console.log('Received cancelled resp:', respjson);
+            setToo(prevToo => ({ ...prevToo, reqstatus: 'cancelled' }));
+            setTooSavedTrigger(prev => prev + 1);
+        }
+        console.log('ToO request cancelled successfully.');
     }
 
     const projCodes = tooItems.map(tooItem => tooItem.ProjCode);
     const incompleteToo = !too.instrument || !too.obsdate || !too.starttime || !too.duration || !too.interruptproj || !too.interrupttype;
-    const submitMsg = too.reqstatus === 'submitted' ? 'Edit Submitted ToO' : too.reqstatus==='draft' ? 'Edit ToO Draft' : 'Create ToO'
+    const submitMsg = ['scheduled', 'cancelled'].includes(too.reqstatus ?? '') ? 'Edit ToO' : too.reqstatus==='draft' ? 'Edit ToO Draft' : 'Create ToO'
     const saveType: ActionType = too.reqstatus === 'submitted' ? 'edit' : 'draft'
 
     return (
@@ -485,7 +493,6 @@ export const TooForm = (props: Props) => {
                             </FormControl>
                         </Tooltip>
                         <TextField sx={{ width: 250, alignSelf: "center" }} label="Duration" value={too.duration} />
-                        <TextField sx={{ width: 250, alignSelf: "center" }} label="Duration" value={too.reqstatus} />
                         <StartTimePicker
                             date={date}
                             time={too.starttime}
