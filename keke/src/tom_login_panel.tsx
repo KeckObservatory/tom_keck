@@ -1,7 +1,7 @@
 import { Button, Stack, TextField } from '@mui/material'
 import { useState } from 'react'
 import { StyledPaper } from './App'
-import { tomAPI } from './config'
+import { TOM_API } from './config'
 
 interface LoginPanelProps {
     setUserInfo?: (userinfo: any) => void
@@ -19,7 +19,7 @@ export const LoginPanel = (props: LoginPanelProps) => {
     const handleTokenVerification = async () => {
         console.log('Verifying token:', token)
         const tokenParams = { email, token }
-        const tokenResp = await fetch(`${tomAPI}/keck_verify_token/`, {
+        const tokenResp = await fetch(`${TOM_API}/keck_verify_token/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export const LoginPanel = (props: LoginPanelProps) => {
         const loginParams = { email, password }
         //@ts-ignore
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
-        const loginResp = await fetch(`${tomAPI}/keck_login/`, {
+        const loginResp = await fetch(`${TOM_API}/keck_login/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export const LoginPanel = (props: LoginPanelProps) => {
         const uid = apicookies['py_uid']
         setTimeout(async () => { //give the auth server some time to set things.
             console.log('Setting user info with UID:', uid)
-            const userinfoResp = await fetch(`${tomAPI}/keck_get_userinfo/?uid=${uid}`, {
+            const userinfoResp = await fetch(`${TOM_API}/keck_get_userinfo/?uid=${uid}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

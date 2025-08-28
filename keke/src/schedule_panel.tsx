@@ -5,7 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useEffect, useState } from 'react';
-import { keckAPILOCALURL, keckAPIURL } from './config';
+import { KECK_API_LOCAL_URL, KECK_API_URL } from './config';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -174,7 +174,7 @@ export const SchedulePanel = (props: Props) => {
                 for (let idx = 1; idx <= 2; idx++) {
                     const telnr = idx.toString();
                     const dateString = date.format('YYYY-MM-DD');
-                    const response = await fetch(`${keckAPILOCALURL}schedule/getScheduleImage?date=${dateString}&telnr=${telnr}`);
+                    const response = await fetch(`${KECK_API_LOCAL_URL}schedule/getScheduleImage?date=${dateString}&telnr=${telnr}`);
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
@@ -189,7 +189,7 @@ export const SchedulePanel = (props: Props) => {
             }
 
             try {
-                const response2 = await fetch(`${keckAPIURL}/too/getInstrumentsTooStatus?date=${date.format('YYYY-MM-DD')}`);
+                const response2 = await fetch(`${KECK_API_URL}/too/getInstrumentsTooStatus?date=${date.format('YYYY-MM-DD')}`);
                 if (!response2.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -211,7 +211,7 @@ export const SchedulePanel = (props: Props) => {
                 for (let idx = 1; idx <= 2; idx++) {
                     const telnr = idx.toString();
                     const dateString = date.format('YYYY-MM-DD');
-                    const response = await fetch(`${keckAPIURL}schedule/getSchedule?date=${dateString}&telnr=${telnr}`);
+                    const response = await fetch(`${KECK_API_URL}schedule/getSchedule?date=${dateString}&telnr=${telnr}`);
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
@@ -229,7 +229,7 @@ export const SchedulePanel = (props: Props) => {
             }
 
             try {
-                const response2 = await fetch(`${keckAPIURL}/too/getInstrumentsTooStatus?date=${date.format('YYYY-MM-DD')}`);
+                const response2 = await fetch(`${KECK_API_URL}/too/getInstrumentsTooStatus?date=${date.format('YYYY-MM-DD')}`);
                 if (!response2.ok) {
                     throw new Error('Network response was not ok');
                 }

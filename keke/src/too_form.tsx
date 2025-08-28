@@ -1,7 +1,7 @@
 import { Tooltip, TextField, Stack, Box, Typography, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
 import { StyledPaper } from './App';
 import { useEffect, useState } from 'react';
-import { keckAPIURL } from './config';
+import { BASE_TOO, KECK_API_URL } from './config';
 import { DayjsDatePicker, type ScheduleItem } from './schedule_panel';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -100,7 +100,7 @@ export const TooForm = (props: Props) => {
     const [tooRequests, setTooRequests] = useState<Too[]>([]);
     const [selectedTooItem, setSelectedTooItem] = useState<TooItem | null>(null);
 
-    const [too, setToo] = useState<Too>({ duration: '1:00:00' } as Too)
+    const [too, setToo] = useState<Too>(BASE_TOO as Too)
     const [tooSavedTrigger, setTooSavedTrigger] = useState(0);
 
     useEffect(() => {
@@ -121,9 +121,16 @@ export const TooForm = (props: Props) => {
         }); // Initialize too with default values
     }, [selectedTooItem, date, userinfo]);
 
+
+
+    const clear_form = () => {
+        setToo(BASE_TOO as Too);
+        setSelectedTooItem(null);
+    }
+
     const get_too_requests = async () => {
         try {
-            const response = await fetch(`${keckAPIURL}/too/getTooRequests?semester=${semester}&obsid=${obsid}`);
+            const response = await fetch(`${KECK_API_URL}/too/getTooRequests?semester=${semester}&obsid=${obsid}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -135,6 +142,7 @@ export const TooForm = (props: Props) => {
                     return to_lower_case_keys(tooReq) as Too
                 })
                 setTooRequests(newTooRequests);
+                return newTooRequests;
             }
         } catch (error) {
             console.error('Error fetching TOOs:', error);
@@ -145,7 +153,7 @@ export const TooForm = (props: Props) => {
         const fetchToos = async () => {
             console.log('TooForm component mounted with target:');
             try {
-                const response = await fetch(`${keckAPIURL}/too/getToo?semester=${semester}&obsid=${obsid}`);
+                const response = await fetch(`${KECK_API_URL}/too/getToo?semester=${semester}&obsid=${obsid}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -170,7 +178,7 @@ export const TooForm = (props: Props) => {
     const call_save_too = async (action: ActionType) => {
         console.log('Saving ToO request with the following details:');
         console.log('too:', too, 'action:', action);
-        const resp = await fetch(`${keckAPIURL}too/submitTooRequest`, {
+        const resp = await fetch(`${KECK_API_URL}too/submitTooRequest`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -181,14 +189,38 @@ export const TooForm = (props: Props) => {
         if (!resp.ok) {
             throw new Error('Failed to save ToO request');
         }
+
+        const respjson = await resp.json();
+
+        if (respjson.status !== 'success') {
+            throw new Error('Failed to save ToO request: ' + respjson.message);
+        }
+        if (respjson.tooid) {
+            setToo(prevToo => ({ ...prevToo, tooid: respjson.tooid }));
+        }
+
+        //update the too requests list
         setTooSavedTrigger(prev => prev + 1);
         console.log('ToO request saved successfully.');
+    }
+
+    const call_too_delete = async (too: Too) => {
+        console.log('Deleting ToO request with the following details:');
+        const resp = await fetch(`${KECK_API_URL}too/deleteTooRequest?tooid=${too.tooid}`, {
+            method: 'DELETE'
+        });
+        if (!resp.ok) {
+            throw new Error('Failed to delete ToO request');
+        }
+        console.log('ToO request deleted successfully.');
+        //update the too requests list to exclude the deleted too
+        setTooSavedTrigger(prev => prev + 1);
     }
 
     const call_too_cancel = async (too: Too) => {
         console.log('Cancelling ToO request with the following details:');
         const cancelRequest = { 'tooid': too.tooid ?? '', 'approvalnotes': 'cancelled via online interface' };
-        const resp = await fetch(`${keckAPIURL}too/submitTooCancel`, {
+        const resp = await fetch(`${KECK_API_URL}too/submitTooCancel`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -202,6 +234,7 @@ export const TooForm = (props: Props) => {
     }
 
     const projCodes = tooItems.map(tooItem => tooItem.ProjCode);
+    const incompleteToo = !too.instrument || !too.obsdate || !too.starttime || !too.duration || !too.interruptproj || !too.interrupttype;
 
     return (
         <Stack sx={{
@@ -225,31 +258,40 @@ export const TooForm = (props: Props) => {
                                 setDate={setDate}
                             />
                         </Stack>
-                        <Tooltip title={'Select existing ToO Request to edit/view'} placement='right'>
-                            <FormControl fullWidth sx={{ width: 150, alignSelf: "center" }}>
-                                <InputLabel id="select-too-request">Select ToO</InputLabel>
-                                <Select
-                                    labelId="select-too-request"
-                                    id="select-too-request"
-                                    required
-                                    value={too?.tooid ? too.target + '-' + too.tooid: ''}
-                                    label="Program Id"
-                                    onChange={(event) => {
-                                        const tooReq = tooRequests.find(too => too.target + '-' + too.tooid === event.target.value);
-                                        console.log('Selected value:', event, tooRequests, tooReq);
+                        <Stack width="100%" direction="column" justifyContent='center' spacing={2}>
+                            <Tooltip title={'Select existing ToO Request to edit/view'} placement='right'>
+                                <FormControl fullWidth sx={{ width: 150, alignSelf: "center" }}>
+                                    <InputLabel id="select-too-request">Select ToO</InputLabel>
+                                    <Select
+                                        labelId="select-too-request"
+                                        id="select-too-request"
+                                        required
+                                        value={too?.tooid ? too.target + '-' + too.tooid : ''}
+                                        label="Program Id"
+                                        onChange={(event) => {
+                                            const tooReq = tooRequests.find(too => too.target + '-' + too.tooid === event.target.value);
+                                            console.log('Selected value:', event, tooRequests, tooReq);
 
-                                        if (tooReq) {
-                                            console.log('Selected ToO Request:', tooReq);
-                                            setToo(to_lower_case_keys(tooReq) as Too);
-                                        }
-                                    }}
-                                >
-                                    {tooRequests && tooRequests.map(too => (
-                                        <MenuItem key={too.tooid} value={too.target + '-' + too.tooid}>{too.target + '-' + too.tooid}</MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Tooltip>
+                                            if (tooReq) {
+                                                console.log('Selected ToO Request:', tooReq);
+                                                setToo(to_lower_case_keys(tooReq) as Too);
+                                            }
+                                        }}
+                                    >
+                                        {tooRequests && tooRequests.map(too => (
+                                            <MenuItem key={too.tooid} value={too.target + '-' + too.tooid}>{too.target + '-' + too.tooid}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Tooltip>
+                            <Button
+                                variant="outlined"
+                                onClick={clear_form}
+                                sx={{ width: 150, alignSelf: "center" }}
+                            >
+                                Clear Form
+                            </Button>
+                        </Stack>
                         <Tooltip title={'select ToO program id'} placement='right'>
                             <FormControl fullWidth sx={{ width: 150, alignSelf: "center" }}>
                                 <InputLabel
@@ -444,9 +486,9 @@ export const TooForm = (props: Props) => {
                             <Button
                                 variant="contained"
                                 onClick={() => call_save_too('draft')}
-                                disabled={!too.instrument || !too.obsdate || !too.starttime || !too.duration || !too.interruptproj || !too.interrupttype}
+                                disabled={incompleteToo}
                             >
-                                Save ToO Request as Draft
+                                Save ToO as Draft
                             </Button>
                         </Tooltip>
                         <Tooltip title={'Submit ToO request'}>
@@ -455,7 +497,7 @@ export const TooForm = (props: Props) => {
                                 onClick={() => call_save_too('submit')}
                                 disabled={!too.tooid}
                             >
-                                Submit ToO Request
+                                Submit ToO
                             </Button>
                         </Tooltip>
                         <Tooltip title={'Cancel ToO request'}>
@@ -466,7 +508,18 @@ export const TooForm = (props: Props) => {
                                 }}
                                 disabled={!too.tooid}
                             >
-                                Cancel ToO Request
+                                Cancel ToO
+                            </Button>
+                        </Tooltip>
+                        <Tooltip title={'Delete ToO request'}>
+                            <Button
+                                variant="contained"
+                                onClick={() => {
+                                    call_too_delete(too);
+                                }}
+                                disabled={!too.tooid}
+                            >
+                                Delete ToO
                             </Button>
                         </Tooltip>
                         <TooInterruptDialogButton too={too} userinfo={userinfo} />

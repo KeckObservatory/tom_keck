@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import type { Too } from './too_form';
 import type { UserInfo } from './App';
-import { keckAPIURL } from './config';
+import { KECK_API_URL } from './config';
 
 
 export interface TooInterruptDialogProps {
@@ -126,7 +126,7 @@ export const TooInterruptDialogButton = (props: Props) => {
                     starttime: too.starttime,
                 }
             ).toString()
-            const response = await fetch(`${keckAPIURL}too/getTooCanInterrupt?${params}`, {
+            const response = await fetch(`${KECK_API_URL}too/getTooCanInterrupt?${params}`, {
                 method: 'GET',
             });
             if (!response.ok) {

@@ -1,7 +1,7 @@
 import Stack from "@mui/material/Stack";
 import { StyledPaper, type UserInfo } from "./App";
 import { Button, Tooltip, Typography } from "@mui/material";
-import { keckAPIURL } from "./config";
+import { KECK_API_URL } from "./config";
 
 interface Props {
     userinfo?: UserInfo;
@@ -109,7 +109,7 @@ export const TargetForm = (props: Props) => {
                 const planningToolTarget = tom_target_to_planning_tool_target(mytgt as unknown as TomTarget, String(userinfo.Id));
                 const body = { 'targets': [planningToolTarget] };
                 document.cookie = `observer=thisisfromtom=?obsid=${btoa(userinfo.Id.toString())}; domain=www3.keck.hawaii.edu; path=/;`;
-                const response = await fetch(`${keckAPIURL}planning_tool/submitPlanningToolTarget`, {
+                const response = await fetch(`${KECK_API_URL}planning_tool/submitPlanningToolTarget`, {
                     //credentials: "same-origin",
                     credentials: "include",
                     method: 'POST',
