@@ -117,7 +117,6 @@ interface Props {
 export const TooInterruptDialogButton = (props: Props) => {
     const { too, userinfo } = props;
     const [open, setOpen] = React.useState(false);
-    const [selectedValue, setSelectedValue] = React.useState(emails[1]);
     const [interruptResult, setInterruptResult] = React.useState<TooInterruptResult | null>(null);
 
     const call_too_can_interrupt = async (too: Too) => {
@@ -163,9 +162,7 @@ export const TooInterruptDialogButton = (props: Props) => {
             <Tooltip title={'Validate ToO request'}>
                 <Button
                     variant="contained"
-                    onClick={() => {
-
-                    }}
+                    onClick={handleClickOpen}
                     disabled={!too.tooid}
                 >
                     Validate ToO Request
