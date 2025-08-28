@@ -11,7 +11,6 @@ import type { Too } from './too_form';
 import type { UserInfo } from './App';
 import { keckAPIURL } from './config';
 
-const emails = ['username@gmail.com', 'user02@gmail.com'];
 
 export interface TooInterruptDialogProps {
     open: boolean;

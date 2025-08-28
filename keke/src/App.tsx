@@ -5,7 +5,7 @@ import { TopBar } from './top_bar'
 import { TooForm } from './too_form'
 import dayjs from 'dayjs'
 import { SchedulePanel, type ScheduleItem } from './schedule_panel'
-import { TargetForm } from './target_form'
+import { get_target_from_url, TargetForm } from './target_form'
 import { keckBase } from './config'
 
 export interface UserInfo {
@@ -112,7 +112,11 @@ function App() {
               </Grid>
               <Grid size={7} justifyContent='center'>
                 <SchedulePanel date={date} setDate={setDate} setSchedule={setSchedule} />
-                <TargetForm userinfo={userinfo} />
+                {
+                  get_target_from_url().name && (
+                    <TargetForm userinfo={userinfo} />
+                  )
+                }
               </Grid>
 
             </Grid>

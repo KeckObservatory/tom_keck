@@ -73,9 +73,7 @@ const tom_target_to_planning_tool_target = (target: TomTarget, obsid: string): P
     return tgt;
 }
 
-export const TargetForm = (props: Props) => {
-    const { userinfo } = props;
-
+export const get_target_from_url = () => {
     const queryString = window.location.search
     const urlParams = new URLSearchParams(queryString)
 
@@ -87,7 +85,7 @@ export const TargetForm = (props: Props) => {
     const pm_ra = urlParams.get('pm_ra') ? parseFloat(urlParams.get('pm_ra') || '0') : undefined;
     const pm_dec = urlParams.get('pm_dec') ? parseFloat(urlParams.get('pm_dec') || '0') : undefined;
 
-    const target = {
+    return {
         name,
         ra,
         dec,
@@ -96,8 +94,14 @@ export const TargetForm = (props: Props) => {
         pm_ra,
         pm_dec
     }
+}
 
+export const TargetForm = (props: Props) => {
+    const { userinfo } = props;
 
+    const queryString = window.location.search
+
+    const target = get_target_from_url();
 
     const handle_send_to_planning_tool = async () => {
 
