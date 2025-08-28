@@ -77,10 +77,10 @@ export const get_target_from_url = () => {
     const queryString = window.location.search
     const urlParams = new URLSearchParams(queryString)
 
-    const name = urlParams.get('name') || 'No Target Name';
-    const ra = urlParams.get('ra') || 0;
-    const dec = urlParams.get('dec') || 0;
-    const epoch = urlParams.get('epoch') || 2000;
+    const name = urlParams.get('name');
+    const ra = urlParams.get('ra');
+    const dec = urlParams.get('dec');
+    const epoch = urlParams.get('epoch');
     const parallax = urlParams.get('parallax') ? parseFloat(urlParams.get('parallax') || '0') : undefined;
     const pm_ra = urlParams.get('pm_ra') ? parseFloat(urlParams.get('pm_ra') || '0') : undefined;
     const pm_dec = urlParams.get('pm_dec') ? parseFloat(urlParams.get('pm_dec') || '0') : undefined;
