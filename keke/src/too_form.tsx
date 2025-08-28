@@ -7,6 +7,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimeField } from '@mui/x-date-pickers/TimeField';
 import dayjs from 'dayjs';
+import { TooInterruptDialogButton } from './too_interrupt_dialog';
 
 interface StartTimePickerProps {
     time: string;
@@ -92,23 +93,12 @@ export interface Too {
     instrconfigs?: object[];
 }
 
-interface TooInterruptResult {
-    checkTimeHST: string
-    InstrReadyWarn: boolean
-    InstrState: string
-    TelReayWarn: boolean
-    TelState: string
-    canInterrupt: boolean;
-    errors: boolean;
-    programs: object[]
-}
 
 export const TooForm = (props: Props) => {
     const { semester, obsid, schedule, date, setDate, userinfo } = props;
     const [tooItems, setTooItems] = useState<TooItem[]>([]);
     const [tooRequests, setTooRequests] = useState<Too[]>([]);
     const [selectedTooItem, setSelectedTooItem] = useState<TooItem | null>(null);
-    const [result, setResult] = useState<TooInterruptResult | null>(null);
 
     const [too, setToo] = useState<Too>({ duration: '1:00:00' } as Too)
     const [tooSavedTrigger, setTooSavedTrigger] = useState(0);
@@ -176,34 +166,6 @@ export const TooForm = (props: Props) => {
         get_too_requests();
     }, [tooSavedTrigger]);
 
-
-    const call_too_can_interrupt = async (too: Too) => {
-        console.log('Calling too_can_interrupt with:', too);
-        const semid = too.semester + '_' + too.projcode;
-        try {
-            const params = new URLSearchParams(
-                {
-                    semid,
-                    obsid: userinfo.Id,
-                    instr: too.instrument,
-                    date: too.obsdate,
-                    duration: too.duration,
-                    starttime: too.starttime,
-                }
-            ).toString()
-            const response = await fetch(`${keckAPIURL}too/getTooCanInterrupt?${params}`, {
-                method: 'GET',
-            });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const res = await response.json();
-            console.log('Response from can_interrupt:', res);
-            setResult(res)
-        } catch (error) {
-            console.error('Error in can_interrupt:', error);
-        }
-    }
 
     const call_save_too = async (action: ActionType) => {
         console.log('Saving ToO request with the following details:');
@@ -507,24 +469,7 @@ export const TooForm = (props: Props) => {
                                 Cancel ToO Request
                             </Button>
                         </Tooltip>
-                        <Tooltip title={'Validate ToO request'}>
-                            <Button
-                                variant="contained"
-                                onClick={() => {
-                                    call_too_can_interrupt(too);
-                                }}
-                                disabled={!too.tooid}
-                            >
-                                Validate ToO Request
-                            </Button>
-                        </Tooltip>
-                        {result && !result.canInterrupt && (
-                            <Tooltip title={'ToO cannot be interrupted'}>
-                                <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-                                    ToO Cannot be Interrupted
-                                </Typography>
-                            </Tooltip>
-                        )}
+                        <TooInterruptDialogButton too={too} userinfo={userinfo} />
                     </Stack>
                 </Box>
             </StyledPaper>
