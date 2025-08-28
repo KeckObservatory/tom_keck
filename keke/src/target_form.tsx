@@ -99,8 +99,6 @@ export const get_target_from_url = () => {
 export const TargetForm = (props: Props) => {
     const { userinfo } = props;
 
-    const queryString = window.location.search
-
     const target = get_target_from_url();
 
     const handle_send_to_planning_tool = async () => {
